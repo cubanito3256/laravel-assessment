@@ -8,16 +8,16 @@ use App\Http\Controllers\Controller;
 class NotificationController extends Controller
 {
     public function showAll(Request $request){
-        $notifications = \App\Notification::where('recipient', $request->user()->id)->select(['id', 'title', 'created_at', 'read'])->get();
 
         /**
          * to handle the `read` status, we could have set an enum `status` field ['read', 'unread'] in the database,
          * and just use it in the response, but a `read` tinyint takes less space. So in the getAll Notifications, we
          * need to parse the read=[0, 1] into status=[unread, read]
          */
-        foreach($notifications as &$notification){
-            $notification->status = ($notification->read) ? 'read' : 'unread';
-        }
+        $notifications = \App\Notification::where('recipient', $request->user()->id)
+            ->select(['id', 'title', 'created_at'])
+            ->selectSub('select if(`read`=1, "read", "unread")', 'status')
+            ->get();        
 
         return $notifications;
     }
