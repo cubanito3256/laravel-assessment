@@ -1,61 +1,42 @@
-<p align="center"><img src="https://res.cloudinary.com/dtfbvvkyp/image/upload/v1566331377/laravel-logolockup-cmyk-red.svg" width="400"></p>
+## Intro
+Steps to run the environment:
+- $HOME/.composer/vendor/bin path should be in $PATH in order to run `composer`
+- Clone/Copy the project from github
+- Install packages by running: `composer install` in the project folder
+- run: `cp .env.example .env` to generate the env file
+    - Ive put in .env.sample the ID and SECRET that PASSPORT uses to generate personal tokens. Its not a good practice to put that info in a file that is tracked by the version control, but, since this is a test, and in order to avoid you the hassle of running the passport install, go to the oauth_clients table, and copy-paste that information into the .env file
+- by default it tries to use a database called `laravel`
+    - Ive built a command to create the database: `php artisan db:create {dbname}`. Ive got some issues while doing this, if the .env var 'DB_DATABASE' is not empty
+    - Or you create the database manually
+    - Update the DB_xxx related .env vars with the correct connection information
+- to execute migrations and run the db seeds run: `php artisan migrate && php artisan db:seed`
+- at this point:
+    - the `users` table should have the 100 users created with the seeder/faker. Default password for all users is: `password`
+    - the oauth_clients should have one row with the same information in the .env file
+- to get the api up and running run: `php artisan serve`. This will start the http server listening on port 8000
+- http://localhost:8000/api/documentation will open a swagger component with the documentation of the api. All the endpoints are documented there and you can test them too, as an alternative to Postman
+- Any change in the .env variables needs to re-start the web server
 
-<p align="center">
-<a href="https://travis-ci.org/laravel/framework"><img src="https://travis-ci.org/laravel/framework.svg" alt="Build Status"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://poser.pugx.org/laravel/framework/d/total.svg" alt="Total Downloads"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://poser.pugx.org/laravel/framework/v/stable.svg" alt="Latest Stable Version"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://poser.pugx.org/laravel/framework/license.svg" alt="License"></a>
-</p>
+## Users
 
-## About Laravel
+Users:
+- I've added an `enabled` field to the `users` table. While this field is `true`(1). The user can login and send/read notifications.
+- I've created a command to disable users. While a user is disabled won't be able to login or to send/read notifications. All access_tokens are revoked
+- I've created a command to enable users. When a user is enabled all revoked tokens are not restored
+- To purge `oauth_access_tokens` table from revoked and expired tokens run: `php artisan passport:purge`. This command can be added to a cron job to execute this task periodically.
 
-Laravel is a web application framework with expressive, elegant syntax. We believe development must be an enjoyable and creative experience to be truly fulfilling. Laravel takes the pain out of development by easing common tasks used in many web projects, such as:
+## Notifications
 
-- [Simple, fast routing engine](https://laravel.com/docs/routing).
-- [Powerful dependency injection container](https://laravel.com/docs/container).
-- Multiple back-ends for [session](https://laravel.com/docs/session) and [cache](https://laravel.com/docs/cache) storage.
-- Expressive, intuitive [database ORM](https://laravel.com/docs/eloquent).
-- Database agnostic [schema migrations](https://laravel.com/docs/migrations).
-- [Robust background job processing](https://laravel.com/docs/queues).
-- [Real-time event broadcasting](https://laravel.com/docs/broadcasting).
+Notifications
+- When a user access the /notification or /notification/{id} endpoints, only the notifications sent to the current user will be visible. This means that one user will not be able to see notifications sent to another user.
+- When creating a notification, a `Title` and a `Message` are mandatory.
+- When accesing /notification the `Message` won't be visible, only the `Title`
+- When accesing /notification/{id} the `Title` and `Message` will be visible, and the notification will be marked as `read`
 
-Laravel is accessible, powerful, and provides tools required for large, robust applications.
+## Extra
 
-## Learning Laravel
-
-Laravel has the most extensive and thorough [documentation](https://laravel.com/docs) and video tutorial library of all modern web application frameworks, making it a breeze to get started with the framework.
-
-If you don't feel like reading, [Laracasts](https://laracasts.com) can help. Laracasts contains over 1500 video tutorials on a range of topics including Laravel, modern PHP, unit testing, and JavaScript. Boost your skills by digging into our comprehensive video library.
-
-## Laravel Sponsors
-
-We would like to extend our thanks to the following sponsors for funding Laravel development. If you are interested in becoming a sponsor, please visit the Laravel [Patreon page](https://patreon.com/taylorotwell).
-
-### Premium Partners
-
-- **[Vehikl](https://vehikl.com/)**
-- **[Tighten Co.](https://tighten.co)**
-- **[Kirschbaum Development Group](https://kirschbaumdevelopment.com)**
-- **[64 Robots](https://64robots.com)**
-- **[Cubet Techno Labs](https://cubettech.com)**
-- **[Cyber-Duck](https://cyber-duck.co.uk)**
-- **[Many](https://www.many.co.uk)**
-- **[Webdock, Fast VPS Hosting](https://www.webdock.io/en)**
-- **[DevSquad](https://devsquad.com)**
-- **[OP.GG](https://op.gg)**
-
-## Contributing
-
-Thank you for considering contributing to the Laravel framework! The contribution guide can be found in the [Laravel documentation](https://laravel.com/docs/contributions).
-
-## Code of Conduct
-
-In order to ensure that the Laravel community is welcoming to all, please review and abide by the [Code of Conduct](https://laravel.com/docs/contributions#code-of-conduct).
-
-## Security Vulnerabilities
-
-If you discover a security vulnerability within Laravel, please send an e-mail to Taylor Otwell via [taylor@laravel.com](mailto:taylor@laravel.com). All security vulnerabilities will be promptly addressed.
-
-## License
-
-The Laravel framework is open-sourced software licensed under the [MIT license](https://opensource.org/licenses/MIT).
+Extra
+- There is an endpoint /extra/info that will retrieve information from YELP. It massages the information and returns:
+    - Bussiness that are `opened`, have a rating >= 4 in Miami, Florida
+    - For each business it will return:
+        - Name, Rating, Google Maps link, Address, Phone, Categories, Services
