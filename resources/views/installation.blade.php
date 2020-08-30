@@ -84,7 +84,8 @@
             @endif
 
             <div class="content">
-                <textarea class="position-ref full-height full-width flex-center">Steps to run the environment:
+                <textarea class="position-ref full-height full-width flex-center">## Intro
+                    Steps to run the environment:
                     - $HOME/.composer/vendor/bin path should be in $PATH in order to run `composer`
                     - Clone/Copy the project from github
                     - Install packages by running: `composer install` in the project folder
@@ -101,24 +102,35 @@
                     - to get the api up and running run: `php artisan serve`. This will start the http server listening on port 8000
                     - http://localhost:8000/api/documentation will open a swagger component with the documentation of the api. All the endpoints are documented there and you can test them too, as an alternative to Postman
                     - Any change in the .env variables needs to re-start the web server
-                
-                Users:
+                    
+                    ## Users
+                    
+                    Users:
                     - I've added an `enabled` field to the `users` table. While this field is `true`(1). The user can login and send/read notifications.
                     - I've created a command to disable users. While a user is disabled won't be able to login or to send/read notifications. All access_tokens are revoked
                     - I've created a command to enable users. When a user is enabled all revoked tokens are not restored
                     - To purge `oauth_access_tokens` table from revoked and expired tokens run: `php artisan passport:purge`. This command can be added to a cron job to execute this task periodically.
-                
-                Notifications
+                    
+                    ## Notifications
+                    
+                    Notifications
                     - When a user access the /notification or /notification/{id} endpoints, only the notifications sent to the current user will be visible. This means that one user will not be able to see notifications sent to another user.
                     - When creating a notification, a `Title` and a `Message` are mandatory.
                     - When accesing /notification the `Message` won't be visible, only the `Title`
                     - When accesing /notification/{id} the `Title` and `Message` will be visible, and the notification will be marked as `read`
-                
-                Extra
+                    
+                    ## Extra
+                    
+                    Extra
                     - There is an endpoint /extra/info that will retrieve information from YELP. It massages the information and returns:
                         - Bussiness that are `opened`, have a rating >= 4 in Miami, Florida
                         - For each business it will return:
-                            - Name, Rating, Google Maps link, Address, Phone, Categories, Services</textarea>
+                            - Name, Rating, Google Maps link, Address, Phone, Categories, Services
+                    
+                    ## Postman
+                    
+                    Postman
+                    - Json files to import Postman collection and environment data are in `public/postman` folder</textarea>
             </div>
         </div>
     </body>

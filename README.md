@@ -40,3 +40,8 @@ Extra
     - Bussiness that are `opened`, have a rating >= 4 in Miami, Florida
     - For each business it will return:
         - Name, Rating, Google Maps link, Address, Phone, Categories, Services
+
+## Postman
+
+Postman
+- Json files to import Postman collection and environment data are in `public/postman` folder
